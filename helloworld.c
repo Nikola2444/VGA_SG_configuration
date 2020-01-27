@@ -93,13 +93,13 @@
 #define DESC1_BASE_ADDR (MEM_BASE_ADDR + 0x00001000)
 #define DESC2_BASE_ADDR (DESC1_BASE_ADDR + 0x40)
 #define DESC3_BASE_ADDR (DESC2_BASE_ADDR + 0x40)
-#define TAIL_PTR (DESC3_BASE_ADDR + 0)
+#define TAIL_PTR (DESC3_BASE_ADDR + 196)
 
 struct sg_desc_s{
     u32 nxtdesc;
-    //u32 nxtdesc_msb;
+    u32 nxtdesc_msb;
     u32 buffer_address;
-   // u32 buffer_address_msb;
+    u32 buffer_address_msb;
     u32 reserved1;
     u32 reserved2;
     u32 control;
@@ -139,6 +139,7 @@ struct sg_desc_s *sg_ptr2 = (struct sg_desc_s *) DESC2_BASE_ADDR;
 struct sg_desc_s *sg_ptr3 = (struct sg_desc_s *) DESC3_BASE_ADDR;
 
 
+
 void desc_init(struct sg_desc_s *desc_ptr,
 	       u32 nxtdesc,
 	       u32 nxtdesc_msb,
@@ -151,76 +152,80 @@ void desc_init(struct sg_desc_s *desc_ptr,
 
 {
     desc_ptr -> nxtdesc = nxtdesc;
-   // desc_ptr -> nxtdesc_msb = nxtdesc_msb;
+    desc_ptr -> nxtdesc_msb = nxtdesc_msb;
     desc_ptr -> buffer_address = buffer_address;
-   // desc_ptr -> buffer_address_msb = buffer_address_msb;
+    desc_ptr -> buffer_address_msb = buffer_address_msb;
     desc_ptr -> reserved1 = reserved1;
     desc_ptr -> reserved2 = reserved2;
     desc_ptr -> control = control;
     desc_ptr -> status = status;
-    
+    desc_ptr -> app_0 = 0;
+    desc_ptr -> app_1 = 0;
+    desc_ptr -> app_2 = 0;
+    desc_ptr -> app_3 = 0;
+    desc_ptr -> app_4 = 0;
 } //end of desc_init();
 void print_descriptors ( struct sg_desc_s *desc_ptr)
 {
-	printf("\nnxtdesc is: %u\n, buffer_address = %u\n", desc_ptr -> nxtdesc, desc_ptr -> buffer_address);
+    printf("\nnxtdesc is: %u\n, buffer_address = %u\n", desc_ptr -> nxtdesc, desc_ptr -> buffer_address);
 }
 
 void print_mem_space(u32 a_base_addr) {
 
-	u32 nxt_dsc;
-	u32 buff_addr;
-	u32 ctrl;
-	u32 sts;
-	u32 r1, r2;
-	u32 a0, a1, a2, a3 ,a4;
-	u32 n_msb, b_msb;
+    u32 nxt_dsc;
+    u32 buff_addr;
+    u32 ctrl;
+    u32 sts;
+    u32 r1, r2;
+    u32 a0, a1, a2, a3 ,a4;
+    u32 n_msb, b_msb;
 
-	nxt_dsc = Xil_In32(a_base_addr);
-	n_msb = Xil_In32(a_base_addr + 0x04);
-	buff_addr = Xil_In32(a_base_addr + 0x08);
-	b_msb = Xil_In32(a_base_addr + 0x0c);
-	r1 = Xil_In32(a_base_addr + 0x10);
-	r2 = Xil_In32(a_base_addr + 0x14);
-	ctrl = Xil_In32(a_base_addr + 0x18);
-	sts = Xil_In32(a_base_addr + 0x1c);
-	a0 = Xil_In32(a_base_addr + 0x20);
-	a1 = Xil_In32(a_base_addr + 0x24);
-	a2 = Xil_In32(a_base_addr + 0x28);
-	a3 = Xil_In32(a_base_addr + 0x2c);
-	a4 = Xil_In32(a_base_addr + 0x30);
+    nxt_dsc = Xil_In32(a_base_addr);
+    n_msb = Xil_In32(a_base_addr + 0x04);
+    buff_addr = Xil_In32(a_base_addr + 0x08);
+    b_msb = Xil_In32(a_base_addr + 0x0c);
+    r1 = Xil_In32(a_base_addr + 0x10);
+    r2 = Xil_In32(a_base_addr + 0x14);
+    ctrl = Xil_In32(a_base_addr + 0x18);
+    sts = Xil_In32(a_base_addr + 0x1c);
+    a0 = Xil_In32(a_base_addr + 0x20);
+    a1 = Xil_In32(a_base_addr + 0x24);
+    a2 = Xil_In32(a_base_addr + 0x28);
+    a3 = Xil_In32(a_base_addr + 0x2c);
+    a4 = Xil_In32(a_base_addr + 0x30);
 
 
-	////////////////////////////////////
-		//Print all the values
-	////////////////////////////////////
+    ////////////////////////////////////
+    //Print all the values
+    ////////////////////////////////////
 
-	printf("NXT DSC : \t%d\n", nxt_dsc);
-	printf("NXT DSC_MSB : \t%d\n", n_msb);
-	printf("NXT BUFF : \t%d\n", buff_addr);
-	printf("NXT BUFF_MSB : \t%d\n",b_msb);
+    printf("NXT DSC : \t%d\n", nxt_dsc >> 6);
+    printf("NXT DSC_MSB : \t%d\n", n_msb);
+    printf("NXT BUFF : \t%d\n", buff_addr);
+    printf("NXT BUFF_MSB : \t%d\n",b_msb);
 
-	printf("RES1 : \t%d\n",r1);
-	printf("RES2 : \t%d\n",r1);
+    printf("RES1 : \t%d\n",r1);
+    printf("RES2 : \t%d\n",r1);
 
-	printf("CTRL : \t%d\n",ctrl);
-	printf("STS : \t%d\n" ,sts);
+    printf("CTRL : \t%d\n",ctrl);
+    printf("STS : \t%d\n" ,sts);
 
-	printf("A0 : \t%d\n",a0);
-	printf("A1 : \t%d\n",a1);
-	printf("A2 : \t%d\n",a2);
-	printf("A3 : \t%d\n",a3);
-	printf("A4 : \t%d\n",a4);
+    printf("A0 : \t%d\n",a0);
+    printf("A1 : \t%d\n",a1);
+    printf("A2 : \t%d\n",a2);
+    printf("A3 : \t%d\n",a3);
+    printf("A4 : \t%d\n",a4);
 }
 
 int main()
 {
     int status;
-    //Debug assist vars
-    u32 DMA_STATUS_r;
+    //Debug assist vars    
 
     u32 control1 = (1 << 27) | (MAX_PKT_LEN/3);
-    u32 control2 =  0 | (MAX_PKT_LEN/3);
+    u32 control2 =  (MAX_PKT_LEN/3);
     u32 control3 = (1 << 26) | (MAX_PKT_LEN/3);
+    //u32 control3 = (MAX_PKT_LEN/3);
 
 
     u32 MM2S_DMACR_reg;
@@ -246,9 +251,9 @@ int main()
     //EO DEBUG
     /////////////////////////////////////
 
-    desc_init(sg_ptr3, TAIL_PTR, 0, (u32)TxBufferPtr3, 0, 0, 0, control3, 0);
-    desc_init(sg_ptr2, (u32)sg_ptr3 << 6, 0, (u32)TxBufferPtr2, 0, 0, 0, control2, 0);
-    desc_init(sg_ptr1, (u32)sg_ptr2 << 6, 0, (u32)TxBufferPtr1, 0, 0, 0, control1, 0);
+    desc_init(sg_ptr3, (u32)sg_ptr1 , 0, (u32)TxBufferPtr3, 0, 0, 0, control3, 0);
+    desc_init(sg_ptr2, (u32)sg_ptr3 , 0, (u32)TxBufferPtr2, 0, 0, 0, control2, 0);
+    desc_init(sg_ptr1, (u32)sg_ptr2 , 0, (u32)TxBufferPtr1, 0, 0, 0, control1, 0);
 
     ////////////////////////////////////
     //DEBUG :
@@ -280,14 +285,14 @@ int main()
     //Start first DMA transaction
     //dma_simple_write(TxBufferPtr1, MAX_PKT_LEN, XPAR_AXI_DMA_0_BASEADDR); //My function that starts a DMA transaction
     xil_printf("\r\npre dma simple write");
-    dma_simple_write ((u32)sg_ptr1, TAIL_PTR, XPAR_AXI_DMA_0_BASEADDR);
+    dma_simple_write ((u32)sg_ptr1, (u32)TAIL_PTR, XPAR_AXI_DMA_0_BASEADDR);
     xil_printf("\r\npost dma simple write");
     while(1);
     cleanup_platform();
     Xil_DCacheDisable();
     Xil_ICacheDisable();
 
-   // DisableIntrSystem();
+    // DisableIntrSystem();
     return 0;
 }
 
@@ -348,7 +353,7 @@ u32 Init_Function(u32 DeviceId)
 
 u32 DMA_init()
 {
-  //    int Status;
+    //    int Status;
     u32 reset = 0x00000004;
     u32 MM2S_DMACR_reg;
     u32 cyclic_enable = 1 << 4;
@@ -359,16 +364,16 @@ u32 DMA_init()
 
     /*XScuGic_SetPriorityTriggerType(&INTCInst, TX_INTR_ID, 0xA8, 0x3);
 
-    /*
-     * Connect the device driver handler that will be called when an
-     * interrupt for the device occurs, the handler defined above performs
-     * the specific interrupt processing for the device.
-     */
+      /*
+      * Connect the device driver handler that will be called when an
+      * interrupt for the device occurs, the handler defined above performs
+      * the specific interrupt processing for the device.
+      */
     /*Status = XScuGic_Connect(&INTCInst, TX_INTR_ID, (Xil_InterruptHandler)TxIntrHandler, NULL);
-    if (Status != XST_SUCCESS) {
-	return Status;
-    }
-    XScuGic_Enable(&INTCInst, TX_INTR_ID);*/
+      if (Status != XST_SUCCESS) {
+      return Status;
+      }
+      XScuGic_Enable(&INTCInst, TX_INTR_ID);*/
 
     /* THIS HERE IS NEEDED TO CONFIGURE DMA*/
     //enable interrupts
@@ -391,11 +396,11 @@ u32 DMA_init()
 //	MM2S_DMACR_reg = Xil_In32(XPAR_AXI_DMA_0_BASEADDR); //reading the control reg
 //      };
 
-        MM2S_DMACR_reg = Xil_In32(XPAR_AXI_DMA_0_BASEADDR);
-        printf("\n Reset bit is after: %u\n", MM2S_DMACR_reg);
+    MM2S_DMACR_reg = Xil_In32(XPAR_AXI_DMA_0_BASEADDR);
+    printf("\n Reset bit is after: %u\n", MM2S_DMACR_reg);
     printf("\n Reset completed\n");
     //u32 en_interrupt = MM2S_DMACR_reg | IOC_IRQ_EN | ERR_IRQ_EN;// seting 13. and 15.th bit in MM2S_DMACR
-    //Xil_Out32(XPAR_AXI_DMA_0_BASEADDR,  MM2S_DMACR_reg | cyclic_enable); // writing to MM2S_DMACR register
+    Xil_Out32(XPAR_AXI_DMA_0_BASEADDR,  MM2S_DMACR_reg | cyclic_enable); // writing to MM2S_DMACR register
     //^here we enabled cyclic buffering for Scatter - Gather mode
     /************************************************************/
 
@@ -428,7 +433,7 @@ int dma_simple_write(u32 current_ptr, u32 tail_ptr, u32 base_address) {
        and                  DMASR.Halted must be 0b1
 
 
-     */
+    */
 
     //read DMASR to double check that Halted bit is 0b1
     MM2S_DMASR_reg = Xil_In32(base_address + 4); //expect 0x1
@@ -441,15 +446,15 @@ int dma_simple_write(u32 current_ptr, u32 tail_ptr, u32 base_address) {
     //stop dma if it's running:
     if((MM2S_DMACR_reg & 0x1) == 0x1) {
 
-      printf("\nWriting out to DMACR to stop it...\n");
+	printf("\nWriting out to DMACR to stop it...\n");
       
-      Xil_Out32 (base_address , (MM2S_DMACR_reg & (~0x00000001))); //clear the RS bit
+	Xil_Out32 (base_address , (MM2S_DMACR_reg & (~0x00000001))); //clear the RS bit
     };
     
     /*Sending address of current desc pointer to DMA*/
 
     //Write current pointer value to MM2S_CURR_DESC register
-    Xil_Out32 (base_address + 0x08, (current_ptr << 6));
+    Xil_Out32 (base_address + 0x08, (current_ptr ));
 
     ////////////////
     //STEP 1 DONE //
@@ -482,7 +487,7 @@ int dma_simple_write(u32 current_ptr, u32 tail_ptr, u32 base_address) {
     //Write to MM2S_TAILDESC reg -> this will trigger the DMA to work
     
     /*Sending address of tail desc pointer to DMA*/
-    Xil_Out32 (base_address + 0x10, tail_ptr << 6);
+    Xil_Out32 (base_address + 0x10, tail_ptr);
 
 
     ///////////////
